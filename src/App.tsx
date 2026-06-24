@@ -140,7 +140,9 @@ function EventImage({ event, className = "", alt = "" }: { event: FestivalEvent;
 
 function IntroCurtain({ onClose }: { onClose: () => void }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const isExitingRef = useRef(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
     const originalBodyOverflow = document.body.style.overflow;
@@ -157,6 +159,15 @@ function IntroCurtain({ onClose }: { onClose: () => void }) {
       document.body.style.overscrollBehavior = originalBodyOverscroll;
     };
   }, []);
+
+  const closeIntro = () => {
+    if (isExitingRef.current) return;
+
+    isExitingRef.current = true;
+    setIsExiting(true);
+    videoRef.current?.pause();
+    window.setTimeout(onClose, 820);
+  };
 
   const startIntro = async () => {
     const video = videoRef.current;
@@ -175,13 +186,13 @@ function IntroCurtain({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <section className={`intro-curtain ${hasStarted ? "is-playing" : "is-gated"}`} aria-label="סרטון פתיחה">
+    <section className={`intro-curtain ${hasStarted ? "is-playing" : "is-gated"} ${isExiting ? "is-exiting" : ""}`} aria-label="סרטון פתיחה">
       <video
         ref={videoRef}
         className="intro-video"
         playsInline
         preload="auto"
-        onEnded={onClose}
+        onEnded={closeIntro}
         poster="/media/images/festival-key-art-720.webp"
       >
         <source src="/media/videos/intro-mobile.mp4" media="(max-width: 760px)" type="video/mp4" />
@@ -197,7 +208,7 @@ function IntroCurtain({ onClose }: { onClose: () => void }) {
             <Theater size={21} aria-hidden="true" />
             הרם את המסך
           </button>
-          <button className="intro-gate-skip" type="button" onClick={onClose}>
+          <button className="intro-gate-skip" type="button" onClick={closeIntro}>
             דלג לאתר
           </button>
         </div>
@@ -205,7 +216,7 @@ function IntroCurtain({ onClose }: { onClose: () => void }) {
 
       {hasStarted && (
         <div className="intro-actions">
-          <button className="skip-button" type="button" onClick={onClose}>
+          <button className="skip-button" type="button" onClick={closeIntro}>
             דלג
           </button>
         </div>
