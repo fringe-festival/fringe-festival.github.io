@@ -432,7 +432,7 @@ function TicketCard({ event, index, onSelectEvent }: { event: FestivalEvent; ind
         openEvent();
       }}
       aria-label={`פתיחת פרטים: ${event.title}`}
-      style={{ "--delay": `${Math.min(index * 60, 360)}ms` } as CSSProperties}
+      style={{ "--delay": `${Math.min(index * 80, 420)}ms` } as CSSProperties}
     >
       <EventImage event={event} />
       <div className="ticket-card-body">
@@ -467,7 +467,7 @@ function TicketSection({ onSelectEvent }: { onSelectEvent: (event: FestivalEvent
   return (
     <section id="tickets" className="tickets-section">
       <div className="section-heading inverted" data-reveal>
-        <span className="eyebrow">המופעים עם כרטיסים</span>
+        <span className="eyebrow">מופעים עם כרטיסים</span>
         <h2>בחרו את הערב שימשוך אתכם מהרחוב אל האולם</h2>
       </div>
       <div className="ticket-grid">
@@ -701,8 +701,15 @@ function FreeSection({ onSelectEvent }: { onSelectEvent: (event: FestivalEvent) 
         <h2>רגעים שאפשר פשוט להיכנס אליהם</h2>
       </div>
       <div className="free-grid">
-        {freeHighlights.slice(0, 8).map((event) => (
-          <button key={event.id} className={`free-card accent-${event.accent}`} type="button" onClick={() => onSelectEvent(event)} data-reveal>
+        {freeHighlights.slice(0, 8).map((event, index) => (
+          <button
+            key={event.id}
+            className={`free-card accent-${event.accent}`}
+            type="button"
+            onClick={() => onSelectEvent(event)}
+            data-reveal
+            style={{ "--delay": `${Math.min(index * 80, 420)}ms` } as CSSProperties}
+          >
             <EventImage event={event} />
             <span className="free-card-body">
               <span>{event.dateLabel} · {event.time}</span>
@@ -771,6 +778,7 @@ function VideoMemory() {
           <video
             ref={recap2024Ref}
             controls
+            playsInline
             preload="metadata"
             poster="/media/images/recap-2024-poster.webp"
             aria-label="רגעים מפסטיבל הפרינג' 2024"
@@ -795,6 +803,7 @@ function VideoMemory() {
           <video
             ref={recap2023Ref}
             controls
+            playsInline
             preload="metadata"
             poster="/media/images/recap-2023-poster.webp"
             aria-label="רגעים מפסטיבל הפרינג' 2023"
