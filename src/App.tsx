@@ -98,10 +98,11 @@ function getPerformanceCardCategory(event: FestivalEvent): PerformanceCardCatego
 function useReveal() {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+    const observedElements = new WeakSet<HTMLElement>();
+    const getRevealElements = (root: ParentNode = document) => Array.from(root.querySelectorAll<HTMLElement>("[data-reveal]"));
 
     if (reduced) {
-      elements.forEach((element) => element.classList.add("is-visible"));
+      getRevealElements().forEach((element) => element.classList.add("is-visible"));
       return;
     }
 
@@ -117,8 +118,32 @@ function useReveal() {
       { threshold: 0.16, rootMargin: "0px 0px -8% 0px" }
     );
 
-    elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    const observeElement = (element: HTMLElement) => {
+      if (observedElements.has(element)) return;
+      observedElements.add(element);
+      observer.observe(element);
+    };
+
+    getRevealElements().forEach(observeElement);
+
+    const mutationObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (node.matches("[data-reveal]")) {
+            observeElement(node);
+          }
+          getRevealElements(node).forEach(observeElement);
+        }
+      }
+    });
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      mutationObserver.disconnect();
+      observer.disconnect();
+    };
   }, []);
 }
 
@@ -571,10 +596,12 @@ function TicketCard({ event, index, onSelectEvent }: { event: FestivalEvent; ind
   const openEvent = () => onSelectEvent(event);
   const hasTicketLink = Boolean(event.ticketUrl && event.price !== "free");
   const cardCategory = getPerformanceCardCategory(event);
+  const shouldReveal = index < 8;
 
   return (
     <article
       className={`ticket-card accent-${event.accent}`}
+      data-reveal={shouldReveal ? true : undefined}
       role="button"
       tabIndex={0}
       onClick={openEvent}

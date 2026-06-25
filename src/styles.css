@@ -1325,7 +1325,7 @@ main {
 .city-section {
   position: relative;
   display: grid;
-  padding: clamp(1.4rem, 3vw, 2.6rem) 0;
+  padding: clamp(0.85rem, 1.8vw, 1.45rem) 0;
   background: var(--teal);
   color: var(--paper);
   overflow: hidden;
@@ -1363,8 +1363,8 @@ main {
     linear-gradient(90deg, rgba(226, 37, 138, 0.12), transparent 18% 82%, rgba(241, 183, 33, 0.18)),
     var(--paper);
   color: var(--ink);
-  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.18);
-  transform: rotate(-0.7deg);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.18);
+  transform: rotate(-0.45deg);
 }
 
 .partner-logo-marquee::before,
@@ -1398,9 +1398,9 @@ main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(150px, 16vw, 220px);
-  height: clamp(70px, 7vw, 98px);
-  padding: 0.72rem 1rem;
+  width: clamp(132px, 14vw, 190px);
+  height: clamp(54px, 5.5vw, 74px);
+  padding: 0.48rem 0.78rem;
   border-inline-end: 2px solid var(--ink);
   background: rgba(255, 255, 255, 0.62);
 }
