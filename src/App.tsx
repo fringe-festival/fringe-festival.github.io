@@ -51,6 +51,8 @@ const priceLabel: Record<FestivalEvent["price"], string> = {
   details: "פרטים"
 };
 
+const IMAGE_VERSION = "ai-square-59137ae";
+
 type AccessibilityPreferenceKey = "largeText" | "highContrast" | "underlineLinks" | "reducedMotion";
 
 type AccessibilityPreferences = Record<AccessibilityPreferenceKey, boolean>;
@@ -272,13 +274,17 @@ function AccessibilityToolbar() {
   );
 }
 
+function versionedImageUrl(src: string) {
+  return `${src}?v=${IMAGE_VERSION}`;
+}
+
 function imageSet(name: string, widths = [480, 720, 960]) {
-  return widths.map((width) => `/media/images/${name}-${width}.webp ${width}w`).join(", ");
+  return widths.map((width) => `/media/images/${name}-${width}.webp?v=${IMAGE_VERSION} ${width}w`).join(", ");
 }
 
 function mediaName(src?: string) {
   if (!src) return undefined;
-  return src.split("/").pop()?.replace(/-\d+\.webp$/, "");
+  return src.split("?")[0].split("/").pop()?.replace(/-\d+\.webp$/, "");
 }
 
 function EventImage({ event, className = "", alt = "" }: { event: FestivalEvent; className?: string; alt?: string }) {
@@ -296,7 +302,7 @@ function EventImage({ event, className = "", alt = "" }: { event: FestivalEvent;
   return (
     <img
       className={`event-art ${className}`}
-      src={event.image}
+      src={versionedImageUrl(event.image)}
       srcSet={imageSet(name)}
       sizes="(max-width: 680px) 88vw, (max-width: 1100px) 42vw, 31vw"
       alt={alt}
