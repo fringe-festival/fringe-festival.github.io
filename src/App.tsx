@@ -1,16 +1,20 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
+  Accessibility,
   ArrowDown,
   CalendarDays,
-  ChevronLeft,
-  ChevronRight,
   Clock,
+  Contrast,
   Download,
+  Eye,
   MapPin,
+  RotateCcw,
   Sparkles,
   Star,
   Theater,
   Ticket,
+  Type,
+  Underline,
   X
 } from "lucide-react";
 import {
@@ -18,8 +22,6 @@ import {
   eventDetails,
   events,
   festivalDays,
-  freeHighlights,
-  premiereEvents,
   ticketEvents,
   type DayId,
   type EventCategory,
@@ -48,6 +50,50 @@ const priceLabel: Record<FestivalEvent["price"], string> = {
   free: "כניסה חופשית",
   details: "פרטים"
 };
+
+type AccessibilityPreferenceKey = "largeText" | "highContrast" | "underlineLinks" | "reducedMotion";
+
+type AccessibilityPreferences = Record<AccessibilityPreferenceKey, boolean>;
+
+const defaultAccessibilityPreferences: AccessibilityPreferences = {
+  largeText: false,
+  highContrast: false,
+  underlineLinks: false,
+  reducedMotion: false
+};
+
+const accessibilityClassNames: Record<AccessibilityPreferenceKey, string> = {
+  largeText: "a11y-large-text",
+  highContrast: "a11y-high-contrast",
+  underlineLinks: "a11y-underline-links",
+  reducedMotion: "a11y-reduce-motion"
+};
+
+type PerformanceCardCategory = "shows" | "music" | "kids" | "workshops";
+
+const performanceCardCategoryLabels: Record<PerformanceCardCategory, string> = {
+  shows: "הצגות",
+  music: "מוזיקה",
+  kids: "ילדים",
+  workshops: "סדנאות"
+};
+
+const performanceCardCategoryOverrides: Record<string, PerformanceCardCategory> = {
+  "diverse-families": "kids",
+  "empty-pot": "kids",
+  "yalla-street": "music",
+  "cocktail-night": "workshops",
+  "beer-festival": "workshops"
+};
+
+function getPerformanceCardCategory(event: FestivalEvent): PerformanceCardCategory {
+  if (performanceCardCategoryOverrides[event.id]) return performanceCardCategoryOverrides[event.id];
+
+  if (event.category === "music") return "music";
+  if (event.category === "family") return "kids";
+  if (event.category === "workshop" || event.category === "city") return "workshops";
+  return "shows";
+}
 
 function useReveal() {
   useEffect(() => {
@@ -102,6 +148,103 @@ function useScrollSignals() {
       window.removeEventListener("resize", onScroll);
     };
   }, []);
+}
+
+function AccessibilityToolbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [preferences, setPreferences] = useState<AccessibilityPreferences>(defaultAccessibilityPreferences);
+
+  useEffect(() => {
+    for (const key of Object.keys(accessibilityClassNames) as AccessibilityPreferenceKey[]) {
+      document.documentElement.classList.toggle(accessibilityClassNames[key], preferences[key]);
+    }
+
+    return () => {
+      for (const className of Object.values(accessibilityClassNames)) {
+        document.documentElement.classList.remove(className);
+      }
+    };
+  }, [preferences]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const closeOnEscape = (keyboardEvent: KeyboardEvent) => {
+      if (keyboardEvent.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen]);
+
+  const controls: Array<{
+    key: AccessibilityPreferenceKey;
+    label: string;
+    icon: ReactNode;
+  }> = [
+    { key: "largeText", label: "הגדלת טקסט", icon: <Type size={18} aria-hidden="true" /> },
+    { key: "highContrast", label: "ניגודיות גבוהה", icon: <Contrast size={18} aria-hidden="true" /> },
+    { key: "underlineLinks", label: "הדגשת קישורים", icon: <Underline size={18} aria-hidden="true" /> },
+    { key: "reducedMotion", label: "צמצום תנועה", icon: <Eye size={18} aria-hidden="true" /> }
+  ];
+
+  const togglePreference = (key: AccessibilityPreferenceKey) => {
+    setPreferences((current) => ({
+      ...current,
+      [key]: !current[key]
+    }));
+  };
+
+  const resetPreferences = () => setPreferences(defaultAccessibilityPreferences);
+
+  return (
+    <aside className={`accessibility-toolbar ${isOpen ? "is-open" : ""}`} aria-label="סרגל נגישות">
+      <button
+        className="accessibility-toggle"
+        type="button"
+        aria-expanded={isOpen}
+        aria-controls="accessibility-panel"
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <Accessibility size={21} aria-hidden="true" />
+        נגישות
+      </button>
+
+      <div id="accessibility-panel" className="accessibility-panel" hidden={!isOpen}>
+        <div className="accessibility-panel-header">
+          <strong>אפשרויות נגישות</strong>
+          <button type="button" onClick={() => setIsOpen(false)} aria-label="סגירת סרגל הנגישות">
+            <X size={18} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="accessibility-actions">
+          {controls.map((control) => (
+            <button
+              key={control.key}
+              className={`accessibility-option ${preferences[control.key] ? "is-active" : ""}`}
+              type="button"
+              aria-pressed={preferences[control.key]}
+              onClick={() => togglePreference(control.key)}
+            >
+              <span>
+                {control.icon}
+                {control.label}
+              </span>
+              <small>{preferences[control.key] ? "פעיל" : "כבוי"}</small>
+            </button>
+          ))}
+        </div>
+
+        <button className="accessibility-reset" type="button" onClick={resetPreferences}>
+          <RotateCcw size={17} aria-hidden="true" />
+          איפוס התאמות
+        </button>
+      </div>
+    </aside>
+  );
 }
 
 function imageSet(name: string, widths = [480, 720, 960]) {
@@ -203,7 +346,7 @@ function IntroCurtain({ onClose }: { onClose: () => void }) {
       {!hasStarted && (
         <div className="intro-gate">
           <span className="intro-gate-kicker">פסטיבל הפרינג׳ הבינלאומי באר שבע</span>
-          <strong>לפני שהעיר נדלקת</strong>
+          <strong>כזה עוד לא היה!</strong>
           <button className="intro-lift-button" type="button" onClick={startIntro}>
             <Theater size={21} aria-hidden="true" />
             הרם את המסך
@@ -235,9 +378,8 @@ function Header() {
       </a>
       <nav className="site-nav" aria-label="ניווט ראשי">
         <a href="#story">הסיפור</a>
-        <a href="#tickets">כרטיסים</a>
         <a href="#schedule">לו״ז</a>
-        <a href="#free">חופשי</a>
+        <a href="#tickets">מופעים</a>
       </nav>
       <a className="header-cta" href="#tickets">
         <Ticket size={18} />
@@ -269,6 +411,10 @@ function Hero() {
           <a className="secondary-action" href="#schedule">
             <CalendarDays size={20} />
             צפייה בלו״ז
+          </a>
+          <a className="secondary-action program-download-action" href="/media/docs/program-2026.pdf" download>
+            <Download size={20} />
+            הורדת התוכניה
           </a>
         </div>
       </div>
@@ -375,7 +521,7 @@ function CountUpStat({
 function StatRail({ shouldStart }: { shouldStart: boolean }) {
   const stats = [
     { value: 4, label: "ימים" },
-    { value: 30, suffix: "+", label: "מופעים וחוויות" },
+    { value: 40, suffix: "+", label: "מופעים וחוויות" },
     { value: 7, label: "בכורות" },
     { text: "עיר", label: "שהופכת לבמה" }
   ];
@@ -398,12 +544,18 @@ function StorySection() {
       </div>
       <div className="story-grid">
         <p data-reveal>
-          פסטיבל הפרינג׳ הבינלאומי באר שבע חוזר במהדורה ה־16 ומזמין את הקהל להיכנס אל מרחב שבו העיר העתיקה, האולמות,
-          הרחבות, הברים והמוזיאונים נעשים חלק מאותה הצגה.
+          העיר היא הבמה, האנשים הם הלב, הסיפורים הם הנשמה.
+          <br />
+          שלוש המילים הללו הן הלב הפועם של פסטיבל הפרינג׳ הבינלאומי ה־16 בבאר שבע.
+          <br />
+          אחרי 16 שנות יצירה, הפסטיבל השנה הוא עדות לעוצמתה של אמנות אלטרנטיבית, נועזת ובועטת, שצומחת מתוך הרחוב, מתוך
+          הקהילה ומתוך האנשים שמרכיבים את המרקם הייחודי של העיר הזו.
         </p>
         <p data-reveal>
-          השנה הפסטיבל חוזר לארח מופעים בינלאומיים מצ׳כיה ומספרד, מעניק זרקור ליצירה מקומית מהדרום, ומחבר בין תיאטרון
-          עצמאי, מחול, מוזיקה, ילדים ואמנות רחוב במסלול אחד חי.
+          השנה, אנו חוזרים לארח מופעים בינלאומיים, מצ׳כיה במסגרת שיתוף פעולה מרגש עם הקהילה היהודית בברנו ומספרד מגיע
+          אלינו מופע פלמנקו ייחודי מחווה לעפרה חזה. לצד זאת, הפסטיבל חוגג התרחבות חסרת תקדים בשיתופי פעולה עם גופי
+          תרבות רבים בעיר ומותח את גבולות הפסטיבל מסמטאותיה הקסומות של העיר העתיקה ורחבת התיאטרון ועד לבמות הגדולות של
+          העיר.
         </p>
         <div className="story-manifesto" data-reveal>
           <Sparkles size={24} />
@@ -417,11 +569,12 @@ function StorySection() {
 
 function TicketCard({ event, index, onSelectEvent }: { event: FestivalEvent; index: number; onSelectEvent: (event: FestivalEvent) => void }) {
   const openEvent = () => onSelectEvent(event);
+  const hasTicketLink = Boolean(event.ticketUrl && event.price !== "free");
+  const cardCategory = getPerformanceCardCategory(event);
 
   return (
     <article
       className={`ticket-card accent-${event.accent}`}
-      data-reveal
       role="button"
       tabIndex={0}
       onClick={openEvent}
@@ -435,6 +588,7 @@ function TicketCard({ event, index, onSelectEvent }: { event: FestivalEvent; ind
       style={{ "--delay": `${Math.min(index * 80, 420)}ms` } as CSSProperties}
     >
       <EventImage event={event} />
+      {event.price === "free" && <span className="free-entry-badge ticket-card-free-ribbon">כניסה חופשית</span>}
       <div className="ticket-card-body">
         <div className="event-meta">
           <span>
@@ -451,102 +605,74 @@ function TicketCard({ event, index, onSelectEvent }: { event: FestivalEvent; ind
         <p>{event.short}</p>
         <div className="tag-row">
           {event.isPremiere && <span className="tag-badge tag-premiere">בכורה</span>}
-          {event.isInternational && <span className="tag-badge tag-international">בינלאומי</span>}
-          <span className={`tag-badge tag-category-${event.category}`}>{categoryLabels[event.category]}</span>
+          <span className={`tag-badge tag-card-category-${cardCategory}`}>{performanceCardCategoryLabels[cardCategory]}</span>
         </div>
-        <a className="card-action row-action price-ticket" href={event.ticketUrl} target="_blank" rel="noreferrer" onClick={(clickEvent) => clickEvent.stopPropagation()}>
-          {priceLabel[event.price]}
-          <Ticket size={17} />
-        </a>
+        {hasTicketLink ? (
+          <a
+            className="card-action row-action price-ticket"
+            href={event.ticketUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(clickEvent) => clickEvent.stopPropagation()}
+          >
+            {priceLabel[event.price]}
+            <Ticket size={17} />
+          </a>
+        ) : (
+          <button
+            className="card-action row-action price-details"
+            type="button"
+            onClick={(clickEvent) => {
+              clickEvent.stopPropagation();
+              onSelectEvent(event);
+            }}
+          >
+            {event.price === "free" ? "פרטים" : priceLabel[event.price]}
+            <Sparkles size={17} />
+          </button>
+        )}
       </div>
     </article>
   );
 }
 
 function TicketSection({ onSelectEvent }: { onSelectEvent: (event: FestivalEvent) => void }) {
+  const [visibleCount, setVisibleCount] = useState(8);
+
+  const orderedEvents = useMemo(() => {
+    const firstTicketEvents = ticketEvents.slice(0, 8);
+    const firstTicketIds = new Set(firstTicketEvents.map((event) => event.id));
+    return [...firstTicketEvents, ...events.filter((event) => !firstTicketIds.has(event.id))];
+  }, []);
+
+  const visibleEvents = orderedEvents.slice(0, visibleCount);
+  const hasMoreEvents = visibleCount < orderedEvents.length;
+
   return (
     <section id="tickets" className="tickets-section">
       <div className="section-heading inverted" data-reveal>
-        <span className="eyebrow">מופעים עם כרטיסים</span>
+        <span className="eyebrow">מופעים</span>
         <h2>בחרו את הערב שימשוך אתכם מהרחוב אל האולם</h2>
       </div>
       <div className="ticket-grid">
-        {ticketEvents.map((event, index) => (
+        {visibleEvents.map((event, index) => (
           <TicketCard key={event.id} event={event} index={index} onSelectEvent={onSelectEvent} />
         ))}
       </div>
-    </section>
-  );
-}
-
-function PremiereSection({ onSelectEvent }: { onSelectEvent: (event: FestivalEvent) => void }) {
-  const stripRef = useRef<HTMLDivElement | null>(null);
-  const displayedPremiereEvents = useMemo(() => [...premiereEvents].reverse(), []);
-
-  useEffect(() => {
-    const strip = stripRef.current;
-    if (!strip) return;
-
-    let frame = 0;
-    const positionAtEnd = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        strip.scrollLeft = Math.max(0, strip.scrollWidth - strip.clientWidth);
-      });
-    };
-
-    positionAtEnd();
-    window.addEventListener("resize", positionAtEnd);
-
-    const resizeObserver = new ResizeObserver(positionAtEnd);
-    resizeObserver.observe(strip);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("resize", positionAtEnd);
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  const scrollPremieres = (direction: "left" | "right") => {
-    const strip = stripRef.current;
-    if (!strip) return;
-
-    const distance = Math.round(strip.clientWidth * 0.72);
-    strip.scrollBy({
-      left: direction === "left" ? -distance : distance,
-      behavior: "smooth"
-    });
-  };
-
-  return (
-    <section className="premiere-section">
-      <div className="section-heading" data-reveal>
-        <span className="eyebrow">בכורות</span>
-        <h2>יצירה שנולדת כאן, מולכם</h2>
-      </div>
-      <div className="premiere-stage has-prev has-next" data-reveal>
-        <button className="premiere-control premiere-next" type="button" onClick={() => scrollPremieres("left")} aria-label="בכורות נוספות">
-          <ChevronLeft size={24} />
-        </button>
-        <div className="premiere-strip" ref={stripRef}>
-          {displayedPremiereEvents.map((event) => (
-            <button
-              key={event.id}
-              className={`premiere-item accent-${event.accent}`}
-              type="button"
-              onClick={() => onSelectEvent(event)}
-              aria-label={`פתיחת פרטים: ${event.title}`}
-            >
-              <span className="premiere-time">{event.time}</span>
-              <span className="premiere-title">{event.title}</span>
-              <span className="premiere-description">{event.short}</span>
-            </button>
-          ))}
+      {hasMoreEvents && (
+        <div className="load-more-row">
+          <button
+            className="load-more-button"
+            type="button"
+            onClick={() => setVisibleCount((current) => Math.min(current + 8, orderedEvents.length))}
+          >
+            טען עוד
+            <ArrowDown size={18} />
+          </button>
         </div>
-        <button className="premiere-control premiere-prev" type="button" onClick={() => scrollPremieres("right")} aria-label="חזרה בבכורות">
-          <ChevronRight size={24} />
-        </button>
+      )}
+      <div className="ticket-count-note" aria-live="polite">
+        מוצגים {visibleEvents.length} מתוך {orderedEvents.length} מופעים
       </div>
     </section>
   );
@@ -612,7 +738,20 @@ function ScheduleSection({ onSelectEvent }: { onSelectEvent: (event: FestivalEve
 
       <div className="schedule-list" data-reveal>
         {filtered.map((event) => (
-          <article key={event.id} className={`schedule-row accent-${event.accent}`} onClick={() => onSelectEvent(event)}>
+          <article
+            key={event.id}
+            className={`schedule-row accent-${event.accent}`}
+            role="button"
+            tabIndex={0}
+            aria-label={`פתיחת פרטים: ${event.title}`}
+            onClick={() => onSelectEvent(event)}
+            onKeyDown={(keyboardEvent) => {
+              if (keyboardEvent.target !== keyboardEvent.currentTarget) return;
+              if (keyboardEvent.key !== "Enter" && keyboardEvent.key !== " ") return;
+              keyboardEvent.preventDefault();
+              onSelectEvent(event);
+            }}
+          >
             <time>{event.time}</time>
             <div className="schedule-main">
               <h3 className="schedule-title">
@@ -660,64 +799,29 @@ function ScheduleSection({ onSelectEvent }: { onSelectEvent: (event: FestivalEve
 }
 
 function CitySection() {
-  const places = [
-    "רחבת תיאטרון הפרינג׳",
-    "אולם תיאטרון הפרינג׳",
-    "תמוז בית המוזיקה",
-    "מיוזיק סיטי",
-    "אמפי עומר",
-    "הבית למחול",
-    "עשן הזמן",
-    "בית הבירה",
-    "מוזיאון הנגב לאמנות"
+  const partnerLogos = [
+    { src: "/partners_logos/משרד התרבות והספורט.png", alt: "משרד התרבות והספורט" },
+    { src: "/partners_logos/kerenbracha.jpg", alt: "קרן ברכה" },
+    { src: "/partners_logos/gdmn.jpg", alt: "לוגו שותף" },
+    { src: "/partners_logos/kivunim.jpg", alt: "כיוונים" },
+    { src: "/partners_logos/fcjalogo(2).jpg", alt: "לוגו שותף בינלאומי" },
+    { src: "/partners_logos/saltarbut.png", alt: "סל תרבות ארצי" },
+    { src: "/partners_logos/beer7.jpg", alt: "באר שבע" },
+    { src: "/partners_logos/bs.jpg", alt: "עיריית באר שבע" },
+    { src: "/partners_logos/לוגו פרינג' שקוף (1) (1) (1).png", alt: "תיאטרון הפרינג׳ באר שבע" }
   ];
+  const marqueeLogos = [...partnerLogos, ...partnerLogos, ...partnerLogos];
 
   return (
-    <section className="city-section">
-      <div className="city-copy" data-reveal>
-        <span className="eyebrow">הפסטיבל מתפשט בעיר</span>
-        <h2>לא מופע אחד. עיר שלמה שנפתחת כמו תפאורה.</h2>
-        <p>
-          המסלול של הפסטיבל בנוי כמו שיטוט: אולם, רחבה, גלריה, בר, מוזיאון, אמפי. בכל מקום מחכה טון אחר, קהל אחר,
-          רגע אחר.
-        </p>
-      </div>
-      <div className="place-marquee" aria-hidden="true">
+    <section className="city-section" aria-label="שותפי הפסטיבל">
+      <div className="partner-logo-marquee" data-reveal>
         <div>
-          {[...places, ...places].map((place, index) => (
-            <span key={`${place}-${index}`}>{place}</span>
+          {marqueeLogos.map((logo, index) => (
+            <span className="partner-logo-card" key={`${logo.src}-${index}`}>
+              <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" />
+            </span>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
-
-function FreeSection({ onSelectEvent }: { onSelectEvent: (event: FestivalEvent) => void }) {
-  return (
-    <section id="free" className="free-section">
-      <div className="section-heading" data-reveal>
-        <span className="eyebrow">כניסה חופשית</span>
-        <h2>רגעים שאפשר פשוט להיכנס אליהם</h2>
-      </div>
-      <div className="free-grid">
-        {freeHighlights.slice(0, 8).map((event, index) => (
-          <button
-            key={event.id}
-            className={`free-card accent-${event.accent}`}
-            type="button"
-            onClick={() => onSelectEvent(event)}
-            data-reveal
-            style={{ "--delay": `${Math.min(index * 80, 420)}ms` } as CSSProperties}
-          >
-            <EventImage event={event} />
-            <span className="free-card-body">
-              <span>{event.dateLabel} · {event.time}</span>
-              <h3>{event.title}</h3>
-              <p>{event.venue}</p>
-            </span>
-          </button>
-        ))}
       </div>
     </section>
   );
@@ -955,21 +1059,23 @@ export default function App() {
 
   return (
     <>
+      <a className="skip-to-content" href="#main-content">
+        דלג לתוכן המרכזי
+      </a>
       {showIntro && <IntroCurtain onClose={() => setShowIntro(false)} />}
       <Header />
-      <main>
+      <main id="main-content">
         <Hero />
         <StatRail shouldStart={!showIntro} />
         <StorySection />
-        <TicketSection onSelectEvent={setSelectedEvent} />
-        <PremiereSection onSelectEvent={setSelectedEvent} />
-        <CitySection />
         <ScheduleSection onSelectEvent={setSelectedEvent} />
-        <FreeSection onSelectEvent={setSelectedEvent} />
+        <TicketSection onSelectEvent={setSelectedEvent} />
         <VideoMemory />
         <FinalCta />
+        <CitySection />
       </main>
       <FloatingPurchase />
+      <AccessibilityToolbar />
       <EventDetailDialog event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       <footer className="site-footer">
         <div className="footer-links">
