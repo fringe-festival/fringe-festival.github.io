@@ -51,7 +51,7 @@ const priceLabel: Record<FestivalEvent["price"], string> = {
   details: "פרטים"
 };
 
-const IMAGE_VERSION = "official-posters-20260628";
+const IMAGE_VERSION = "official-posters-20260628-netta";
 
 type AccessibilityPreferenceKey = "largeText" | "highContrast" | "underlineLinks" | "reducedMotion";
 
