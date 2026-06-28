@@ -51,7 +51,7 @@ const priceLabel: Record<FestivalEvent["price"], string> = {
   details: "פרטים"
 };
 
-const IMAGE_VERSION = "ai-square-59137ae";
+const IMAGE_VERSION = "official-posters-20260628";
 
 type AccessibilityPreferenceKey = "largeText" | "highContrast" | "underlineLinks" | "reducedMotion";
 
