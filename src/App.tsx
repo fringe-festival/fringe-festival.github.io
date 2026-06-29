@@ -52,6 +52,7 @@ const priceLabel: Record<FestivalEvent["price"], string> = {
 };
 
 const IMAGE_VERSION = "official-posters-20260628-netta";
+const PROGRAM_PDF_URL = "/media/docs/program-2026.pdf?v=program-20260629";
 
 type AccessibilityPreferenceKey = "largeText" | "highContrast" | "underlineLinks" | "reducedMotion";
 
@@ -443,7 +444,7 @@ function Hero() {
             <CalendarDays size={20} />
             צפייה בלו״ז
           </a>
-          <a className="secondary-action program-download-action" href="/media/docs/program-2026.pdf" download>
+          <a className="secondary-action program-download-action" href={PROGRAM_PDF_URL} download="program-2026.pdf">
             <Download size={20} />
             הורדת התוכניה
           </a>
@@ -1030,7 +1031,7 @@ function EventDetailDialog({ event, onClose }: { event: FestivalEvent | null; on
                 רכישת כרטיס
               </a>
             )}
-            <a className="secondary-action" href="/media/docs/program-2026.pdf" target="_blank" rel="noreferrer">
+            <a className="secondary-action" href={PROGRAM_PDF_URL} target="_blank" rel="noreferrer">
               <Download size={20} />
               תוכניה מלאה
             </a>
@@ -1054,7 +1055,7 @@ function FinalCta() {
           <Ticket size={20} />
           רכישת כרטיסים
         </a>
-        <a className="secondary-action light" href="/media/docs/program-2026.pdf" target="_blank" rel="noreferrer">
+        <a className="secondary-action light" href={PROGRAM_PDF_URL} target="_blank" rel="noreferrer">
           <Download size={20} />
           תוכניה מלאה
         </a>
@@ -1115,7 +1116,7 @@ export default function App() {
           <a href="/media/docs/schedule-2026.pdf" target="_blank" rel="noreferrer">
             לו״ז PDF
           </a>
-          <a href="/media/docs/program-2026.pdf" target="_blank" rel="noreferrer">
+          <a href={PROGRAM_PDF_URL} target="_blank" rel="noreferrer">
             תוכניה מלאה
           </a>
         </div>
