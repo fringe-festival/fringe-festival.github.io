@@ -837,9 +837,7 @@ function CitySection() {
     { src: "/partners_logos/משרד התרבות והספורט.png", alt: "משרד התרבות והספורט" },
     { src: "/partners_logos/kerenbracha.jpg", alt: "קרן ברכה" },
     { src: "/partners_logos/gdmn.jpg", alt: "לוגו שותף" },
-    { src: "/partners_logos/kivunim.jpg", alt: "כיוונים" },
     { src: "/partners_logos/fcjalogo(2).jpg", alt: "לוגו שותף בינלאומי" },
-    { src: "/partners_logos/saltarbut.png", alt: "סל תרבות ארצי" },
     { src: "/partners_logos/beer7.jpg", alt: "באר שבע" },
     { src: "/partners_logos/bs.jpg", alt: "עיריית באר שבע" },
     { src: "/partners_logos/לוגו פרינג' שקוף (1) (1) (1).png", alt: "תיאטרון הפרינג׳ באר שבע" }
