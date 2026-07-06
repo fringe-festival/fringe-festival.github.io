@@ -52,7 +52,7 @@ const priceLabel: Record<FestivalEvent["price"], string> = {
 };
 
 const IMAGE_VERSION = "official-posters-20260628-netta";
-const PROGRAM_PDF_URL = "/media/docs/program-2026.pdf?v=program-20260629";
+const PROGRAM_PDF_URL = "/media/docs/program-2026.pdf?v=program-20260706";
 
 type AccessibilityPreferenceKey = "largeText" | "highContrast" | "underlineLinks" | "reducedMotion";
 
