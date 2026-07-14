@@ -51,8 +51,8 @@ const priceLabel: Record<FestivalEvent["price"], string> = {
   details: "פרטים"
 };
 
-const IMAGE_VERSION = "lost-objects-update-20260714";
-const PROGRAM_PDF_URL = "/media/docs/program-2026.pdf?v=program-20260706";
+const IMAGE_VERSION = "program-summer-kids-update-20260714";
+const PROGRAM_PDF_URL = "/media/docs/program-2026.pdf?v=program-20260714";
 
 type AccessibilityPreferenceKey = "largeText" | "highContrast" | "underlineLinks" | "reducedMotion";
 
