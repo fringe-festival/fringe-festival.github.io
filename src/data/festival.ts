@@ -254,21 +254,6 @@ export const events: FestivalEvent[] = [
     short: "מופע גלריה אינטימי שמוסיף שכבה מוזיקלית למסלול העירוני."
   },
   {
-    id: "itzik-kala",
-    title: "איציק קלה מארח את דניאל וייס",
-    day: "28",
-    dateLabel: "28.7",
-    time: "20:30",
-    venue: "אמפי עומר",
-    category: "music",
-    price: "ticket",
-    image: "/media/images/itzik-kala-960.webp",
-    accent: "yellow",
-    short:
-      "אחד מעמודי התווך של המוזיקה הים־תיכונית במפגש במה עם דניאל וייס.",
-    ticketUrl: "https://www.thefringe.co.il/?CategoryID=404&ArticleID=585"
-  },
-  {
     id: "alma-galbi",
     title: "ALMA GALBI",
     subtitle: "פלמנקו לעפרה חזה",
@@ -296,6 +281,19 @@ export const events: FestivalEvent[] = [
     image: "/media/images/idan-haviv-960.webp",
     accent: "orange",
     short: "מופע אינטימי מיוחד לט״ו באב."
+  },
+  {
+    id: "leah-shabat",
+    title: "לאה שבת",
+    day: "28",
+    dateLabel: "28.7",
+    time: "22:00",
+    venue: "רחבת תיאטרון הפרינג׳",
+    category: "music",
+    price: "free",
+    image: "/media/images/leah-shabat-960.webp",
+    accent: "teal",
+    short: "מופע פתוח ברחבת הפרינג׳ עם אחת היוצרות והקולות האהובים במוזיקה הישראלית."
   },
   {
     id: "neta-alima",
@@ -356,6 +354,20 @@ export const events: FestivalEvent[] = [
     accent: "pink",
     short:
       "תיאטרון קטן רכוב על אופניים שמזמין ילדים לפתוח תיבה ולגלות סיפורים."
+  },
+  {
+    id: "art-more-30",
+    title: "אמנות ועוד",
+    subtitle: "Art & More",
+    day: "29",
+    dateLabel: "29.7",
+    time: "19:00",
+    venue: "בית הבובות",
+    category: "workshop",
+    price: "details",
+    image: "/media/images/art-more-30-960.webp",
+    accent: "teal",
+    short: "סדנת צבע, דמיון ואווירה טובה."
   },
   {
     id: "goodman",
@@ -450,20 +462,6 @@ export const events: FestivalEvent[] = [
     image: "/media/images/family-carnival-960.webp",
     accent: "yellow",
     short: "קרנבל פתוח שמכניס את המשפחות אל יום הסיום."
-  },
-  {
-    id: "art-more-30",
-    title: "אמנות ועוד",
-    subtitle: "Art & More",
-    day: "30",
-    dateLabel: "30.7",
-    time: "19:00",
-    venue: "בית הבובות",
-    category: "workshop",
-    price: "details",
-    image: "/media/images/art-more-30-960.webp",
-    accent: "teal",
-    short: "סדנת צבע, דמיון ואווירה טובה."
   },
   {
     id: "beer-festival",
@@ -647,10 +645,6 @@ export const eventDetails: Record<string, string[]> = {
     "מופע גלריה אינטימי בגלריה Sol.",
     "תחנת מוזיקה קטנה בתוך מסלול העיר, שמוסיפה לפסטיבל שכבה קרובה ומקומית."
   ],
-  "itzik-kala": [
-    "איציק קלה, מאבני היסוד של המוזיקה הישראלית והים־תיכונית, על במה אחת עם דניאל וייס.",
-    "קלה מלווה את פס הקול הישראלי מעל חמישה עשורים עם יותר מ־30 אלבומים ושירים שהפכו לנכסי צאן ברזל."
-  ],
   "alma-galbi": [
     "מחווה ראשונה מסוגה לעפרה חזה, שבה המוזיקה התימנית והפלמנקו נפגשים על במה אחת.",
     "פיוטים תימניים ולהיטי פופ כמו ״אם ננעלו״ ו״לאורך הים״ מקבלים צורות פלמנקו של בולריה, פנדנגוס, טנגוס ורומבה.",
@@ -659,6 +653,10 @@ export const eventDetails: Record<string, string[]> = {
   "idan-haviv": [
     "מופע אינטימי מיוחד לט״ו באב במיוזיק סיטי.",
     "ערב שירים קרוב ואישי של אחד הקולות המזוהים במוזיקה הישראלית העכשווית."
+  ],
+  "leah-shabat": [
+    "לאה שבת במופע פתוח ברחבת תיאטרון הפרינג׳.",
+    "ערב של קול, גיטרה ושירים מוכרים שנכנסים ישר ללב, כחלק מחוויית הרחבה החופשית של הפסטיבל."
   ],
   "neta-alima": [
     "נטע עלימה במופע להקה ראשון עם שירים שלה ושל אחרים.",
@@ -708,7 +706,7 @@ export const eventDetails: Record<string, string[]> = {
   ],
   "art-more-30": [
     "סדנת Art & More בבית הבובות.",
-    "מפגש צבע ודמיון שמציע הפוגה יצירתית בתוך יום הסיום."
+    "מפגש צבע ודמיון שמציע הפוגה יצירתית בתוך מסלול הערב."
   ],
   "beer-festival": [
     "פסטיבל בירה עם מגוון בירות מיוחדות וקיציות ממבשלות בארץ ומחו״ל.",
