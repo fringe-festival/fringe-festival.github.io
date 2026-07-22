@@ -87,15 +87,15 @@ export const events: FestivalEvent[] = [
   {
     id: "paint-wine",
     title: "Paint & Wine",
-    day: "27",
-    dateLabel: "27.7",
-    time: "21:00",
-    venue: "עשן הזמן",
+    day: "29",
+    dateLabel: "29.7",
+    time: "19:00",
+    venue: "בית הבובות",
     category: "workshop",
     price: "details",
     image: "/media/images/paint-wine-960.webp",
     accent: "teal",
-    short: "סדנת יצירה עם יין, מוזיקה ואווירה חופשית לפתיחת הפסטיבל."
+    short: "סדנת יצירה עם יין, צבע ומוזיקה באווירה חופשית בבית הבובות."
   },
   {
     id: "hymn-to-love",
@@ -594,7 +594,7 @@ export const eventDetails: Record<string, string[]> = {
     "מופע עירוני, חד וקצבי שמכניס את הקהל לאווירת הפסטיבל דרך הומור ישראלי חי."
   ],
   "paint-wine": [
-    "סדנת יצירה אינטימית בעשן הזמן, עם יין, צבע ומוזיקה.",
+    "סדנת יצירה אינטימית בבית הבובות, עם יין, צבע ומוזיקה.",
     "חוויה פתוחה לקהל שמבקשת לפרק את המרחק בין צופה ליוצר ולהתחיל את הערב בידיים עובדות."
   ],
   "hymn-to-love": [
